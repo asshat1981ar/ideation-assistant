@@ -64,6 +64,7 @@ Thumbs.db
 test_*.py
 *_test.py
 tests/
+!build_and_test.py
 
 # Documentation build
 docs/_build/
