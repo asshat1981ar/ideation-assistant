@@ -358,7 +358,7 @@ class EnhancedPlanningMode:
                 innovation_level=context.get("innovation_level", "high"),
                 count=3
             )
-            context["generated_ideas"] = ideas
+            context["generated_ideas"] = [asdict(idea) for idea in ideas]
             tools_used.append("ideation_system")
         
         # Step 2: DeepSeek-powered planning
@@ -468,14 +468,23 @@ class EnhancedPlanningMode:
         best_iteration = max(session.iterations, key=lambda x: x.confidence_score)
         
         # Use DeepSeek to synthesize final plan
+        # Define JSON serializer for datetime objects
+        def json_serializer(obj):
+            """JSON serializer for objects not serializable by default json code"""
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
         synthesis_prompt = f"""
 Synthesize a final, comprehensive plan from the following planning iterations:
 
 DOMAIN: {session.domain}
-INITIAL REQUIREMENTS: {json.dumps(session.initial_requirements, indent=2)}
+INITIAL REQUIREMENTS: {json.dumps(session.initial_requirements, indent=2, default=json_serializer)}
 
 PLANNING ITERATIONS:
-{json.dumps([asdict(iteration) for iteration in session.iterations], indent=2, default=str)}
+{json.dumps([asdict(iteration) for iteration in session.iterations], indent=2, default=json_serializer)}
 
 BEST ITERATION SCORE: {best_iteration.confidence_score:.2f}
 
@@ -500,7 +509,7 @@ Provide the final plan in a structured format with clear sections.
             "confidence_score": best_iteration.confidence_score,
             "iterations_processed": len(session.iterations),
             "synthesis_timestamp": datetime.now().isoformat(),
-            "all_iterations": [asdict(iteration) for iteration in session.iterations]
+            "all_iterations": [json.loads(json.dumps(asdict(iteration), default=json_serializer)) for iteration in session.iterations]
         }
         
         return final_plan
@@ -624,8 +633,16 @@ Provide the final plan in a structured format with clear sections.
             "final_confidence": session.final_plan.get("confidence_score", 0)
         }
         
+        def json_serializer(obj):
+            """JSON serializer for objects not serializable by default json code"""
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
         with open(session_file, 'w') as f:
-            json.dump(session_data, f, indent=2, default=str)
+            json.dump(session_data, f, indent=2, default=json_serializer)
         
         logger.info(f"💾 Session data saved to {session_file}")
     

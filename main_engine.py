@@ -459,11 +459,20 @@ Created: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}
             "created_at": self.session_data["created_at"].isoformat(),
             "workflow_summary": final_results["workflow_summary"],
             "success_metrics": final_results["project_details"]["success_metrics"],
-            "next_steps": final_results["next_steps"]
+            "next_steps": final_results["next_steps"],
+            "generated_at": final_results["generated_at"].isoformat()
         }
         
+        def json_serializer(obj):
+            """JSON serializer for objects not serializable by default json code"""
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
         with open(session_file, 'w') as f:
-            json.dump(serializable_data, f, indent=2, default=str)
+            json.dump(serializable_data, f, indent=2, default=json_serializer)
         
         print(f"💾 Session data saved to: {session_file}")
     

@@ -487,8 +487,16 @@ class MCPServerManager:
             "saved_at": datetime.now().isoformat()
         }
         
+        def json_serializer(obj):
+            """JSON serializer for objects not serializable by default json code"""
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
         with open(config_path, 'w') as f:
-            json.dump(config_data, f, indent=2, default=str)
+            json.dump(config_data, f, indent=2, default=json_serializer)
         
         logger.info(f"Saved MCP configuration to {config_path}")
     

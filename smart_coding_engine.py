@@ -520,8 +520,16 @@ class SmartCodingEngine:
         
         plan_file = self.workspace_dir / f"{project_plan.name.replace(' ', '_').lower()}_plan.json"
         
+        def json_serializer(obj):
+            """JSON serializer for objects not serializable by default json code"""
+            if isinstance(obj, datetime):
+                return obj.isoformat()
+            if hasattr(obj, '__dict__'):
+                return obj.__dict__
+            return str(obj)
+        
         with open(plan_file, 'w') as f:
-            json.dump(asdict(project_plan), f, indent=2, default=str)
+            json.dump(asdict(project_plan), f, indent=2, default=json_serializer)
         
         print(f"💾 Project plan saved to: {plan_file}")
     
