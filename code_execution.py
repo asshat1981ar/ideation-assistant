@@ -97,8 +97,8 @@ class SafeCodeExecutor:
         temp_file = await self._create_temp_file(code, language)
         
         try:
-            # Get execution command
-            command = self._get_execution_command(temp_file, language)
+            # Get execution command - use filename only since we're executing from temp dir
+            command = self._get_execution_command(temp_file, language, use_filename_only=True)
             
             # Execute with safety measures - use temp file's parent as working dir
             result = await self._safe_execute(
@@ -160,19 +160,22 @@ class SafeCodeExecutor:
         logger.debug(f"Created temp file: {temp_file}")
         return temp_file
     
-    def _get_execution_command(self, file_path: Path, language: str) -> List[str]:
+    def _get_execution_command(self, file_path: Path, language: str, use_filename_only: bool = False) -> List[str]:
         """Get command to execute code file"""
         
+        # Use just filename if we're executing from the file's directory
+        file_ref = file_path.name if use_filename_only else str(file_path)
+        
         commands = {
-            'python': ['python3', str(file_path)],
-            'javascript': ['node', str(file_path)],
-            'typescript': ['npx', 'ts-node', str(file_path)],
+            'python': ['python3', file_ref],
+            'javascript': ['node', file_ref],
+            'typescript': ['npx', 'ts-node', file_ref],
             'java': self._get_java_command(file_path),
             'cpp': self._get_cpp_command(file_path),
             'c': self._get_c_command(file_path),
-            'go': ['go', 'run', str(file_path)],
+            'go': ['go', 'run', file_ref],
             'rust': self._get_rust_command(file_path),
-            'shell': ['bash', str(file_path)]
+            'shell': ['bash', file_ref]
         }
         
         command = commands.get(language.lower())
