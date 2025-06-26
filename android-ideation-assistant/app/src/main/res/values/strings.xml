@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ideation Assistant</string>
+    <string name="dashboard">Dashboard</string>
+    <string name="ideation">Ideation</string>
+    <string name="planning">Planning</string>
+    <string name="development">Development</string>
+    <string name="generate_ideas">Generate Ideas</string>
+    <string name="start_planning">Start Planning</string>
+    <string name="create_project">Create Project</string>
+    <string name="ai_insights">AI Insights</string>
+    <string name="trending_technologies">Trending Technologies</string>
+    <string name="recent_ideas">Recent Ideas</string>
+    <string name="active_projects">Active Projects</string>
+    <string name="confidence_score">Confidence Score</string>
+    <string name="market_size">Market Size</string>
+    <string name="target_market">Target Market</string>
+    <string name="innovation_level">Innovation Level</string>
+    <string name="tech_stack">Technology Stack</string>
+    <string name="progress">Progress</string>
+    <string name="timeline">Timeline</string>
+    <string name="status">Status</string>
+    <string name="description">Description</string>
+    <string name="features">Features</string>
+    <string name="domain">Domain</string>
+</resources>
