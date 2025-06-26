@@ -1,0 +1,69 @@
+# Sensitive files and credentials
+.ideation_config
+.env
+*.log
+
+# Configuration files with sensitive data
+config.json
+.ideation_assistant/
+!.ideation_assistant/env_template.txt
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Workspace directories
+workspace/
+orchestrator_workspace/
+code_workspace/
+enhanced_planning_workspace/
+filesystem_workspace/
+mcp_config/
+demo_workspace/
+smart_coding_workspace/
+test_git_repo/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Temporary files
+temp/
+*.tmp
+*.bak
+
+# Runtime files
+*.pid
+*.sock
+session_*.json
+
+# Termux storage
+storage/
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test files
+test_*.py
+*_test.py
+tests/
+
+# Documentation build
+docs/_build/
