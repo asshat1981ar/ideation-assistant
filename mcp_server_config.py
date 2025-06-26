@@ -7,6 +7,7 @@ Setup and management of predefined MCP servers for enhanced capabilities
 import asyncio
 import json
 import os
+import sys
 from typing import Dict, List, Any, Optional, Callable
 from dataclasses import dataclass, asdict
 from datetime import datetime
@@ -128,7 +129,7 @@ class MCPServerManager:
         # Code Analysis Server
         self.servers["code_analysis"] = MCPServerConfig(
             name="code_analysis",
-            command=["python", "-m", "mcp_servers.code_analysis"],
+            command=[sys.executable, "-m", "mcp_servers.code_analysis"],
             description="Code analysis and quality assessment",
             capabilities=[
                 "code_complexity", "code_quality", "security_scan",
@@ -139,7 +140,7 @@ class MCPServerManager:
         # Planning Server
         self.servers["planning"] = MCPServerConfig(
             name="planning",
-            command=["python", "-m", "mcp_servers.planning"],
+            command=[sys.executable, "-m", "mcp_servers.planning"],
             description="Project planning and management capabilities",
             capabilities=[
                 "project_planning", "resource_estimation", "risk_analysis",
@@ -150,7 +151,7 @@ class MCPServerManager:
         # API Integration Server
         self.servers["api_integration"] = MCPServerConfig(
             name="api_integration",
-            command=["python", "-m", "mcp_servers.api_integration"],
+            command=[sys.executable, "-m", "mcp_servers.api_integration"],
             description="External API integration and management",
             capabilities=[
                 "api_discovery", "api_testing", "webhook_management",

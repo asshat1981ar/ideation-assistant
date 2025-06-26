@@ -62,7 +62,7 @@ class ToolOrchestrator:
         # Initialize tool managers
         self.filesystem_manager = FilesystemManager(str(self.workspace_dir / "filesystem"))
         self.mcp_manager = MCPServerManager(str(self.workspace_dir / "mcp_config"))
-        self.code_engine = CodeInteractionEngine(str(self.workspace_dir / "code"))
+        self.code_engine = CodeInteractionEngine(str(self.workspace_dir / "code_workspace"))
         
         # Will be initialized in async context
         self.deepseek_client = None
@@ -355,7 +355,7 @@ class ToolOrchestrator:
         
         project_path = requirements.get("project_path", ".")
         project_structure = await self.filesystem_manager.scan_project(project_path)
-        workflow.results["project_structure"] = project_structure
+        workflow.results["project_structure"] = asdict(project_structure)
         workflow.steps[-1]["status"] = "completed"
         
         # Step 2: Code quality analysis

@@ -64,7 +64,7 @@ class SafeCodeExecutor:
     
     def __init__(self, workspace_dir: str = "./code_workspace"):
         self.workspace_dir = Path(workspace_dir)
-        self.workspace_dir.mkdir(exist_ok=True)
+        self.workspace_dir.mkdir(parents=True, exist_ok=True)
         
         self.execution_history: List[ExecutionResult] = []
         self.active_processes: Dict[str, subprocess.Popen] = {}
@@ -87,7 +87,8 @@ class SafeCodeExecutor:
         """Execute code safely with specified language"""
         
         timeout = timeout or self.default_timeout
-        working_dir = Path(working_dir or self.workspace_dir)
+        # Use the temp directory as working directory for execution
+        execution_working_dir = Path(working_dir) if working_dir else self.workspace_dir
         environment = environment or {}
         
         logger.info(f"🚀 Executing {language} code")
@@ -99,10 +100,10 @@ class SafeCodeExecutor:
             # Get execution command
             command = self._get_execution_command(temp_file, language)
             
-            # Execute with safety measures
+            # Execute with safety measures - use temp file's parent as working dir
             result = await self._safe_execute(
                 command=command,
-                working_dir=working_dir,
+                working_dir=temp_file.parent,
                 timeout=timeout,
                 environment=environment
             )
@@ -134,11 +135,20 @@ class SafeCodeExecutor:
         
         extension = extensions.get(language.lower(), '.txt')
         
-        # Create temporary file
+        # Create temporary file with proper path handling
         temp_dir = self.workspace_dir / "temp"
-        temp_dir.mkdir(exist_ok=True)
+        temp_dir.mkdir(parents=True, exist_ok=True)
         
-        temp_file = temp_dir / f"code_{int(time.time())}{extension}"
+        # Use timestamp and random component for unique filename
+        import random
+        unique_id = f"{int(time.time())}_{random.randint(1000, 9999)}"
+        temp_file = temp_dir / f"code_{unique_id}{extension}"
+        
+        # Ensure the file doesn't already exist
+        counter = 0
+        while temp_file.exists() and counter < 100:
+            counter += 1
+            temp_file = temp_dir / f"code_{unique_id}_{counter}{extension}"
         
         with open(temp_file, 'w', encoding='utf-8') as f:
             f.write(code)
@@ -147,6 +157,7 @@ class SafeCodeExecutor:
         if language.lower() == 'shell':
             temp_file.chmod(0o755)
         
+        logger.debug(f"Created temp file: {temp_file}")
         return temp_file
     
     def _get_execution_command(self, file_path: Path, language: str) -> List[str]:
