@@ -38,7 +38,11 @@ jobs:
       run: chmod +x android-ideation-assistant/gradlew
       
     - name: Build debug APK
-      run: cd android-ideation-assistant && ./gradlew assembleDebug
+      run: |
+        cd android-ideation-assistant
+        export JAVA_OPTS="-Xmx4g -XX:MaxMetaspaceSize=1g"
+        export GRADLE_OPTS="-Dorg.gradle.jvmargs='-Xmx4g -XX:MaxMetaspaceSize=1g' -Dorg.gradle.daemon=false"
+        ./gradlew assembleDebug --no-daemon --max-workers=2
       
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
